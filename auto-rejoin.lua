@@ -1,4 +1,4 @@
-_G.scriptToLoad = _G.scriptToLoad
+_G.scriptToLoad = math.abs(_G.scriptToLoad)
 local NetworkClient = cloneref(game:GetService("NetworkClient"))
 local TeleportService = cloneref(game:GetService("TeleportService"))
 local Players = cloneref(game:GetService("Players"))
