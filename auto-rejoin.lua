@@ -8,7 +8,7 @@ local args = {
 	[2] = game.JobId,
 	[3] = Players.LocalPlayer
 }
-queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/xanyboyo/private/refs/heads/main/auto-rejoin.lua?token=GHSAT0AAAAAADPMWF5ZTGX4LSAUNVFJ6GXS2I6D6KA'))()")
+queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/xanyboyo/private/refs/heads/main/auto-rejoin.lua?token=GHSAT0AAAAAADPMWF5YDX4N3R2NAUHUG33C2I6D7UA'))()")
 -----------------------------------------------------------------------------------------------------------
 if _G.scriptToLoad = 1 then
 	loadstring(game:HttpGet('https://raw.githubusercontent.com/TheRealAsu/BABFT/refs/heads/main/Loader.lua'))()
