@@ -1,4 +1,5 @@
 _G.scriptToLoad = math.abs(_G.scriptToLoad)
+print("auto-rejoin Loaded!")
 local NetworkClient = cloneref(game:GetService("NetworkClient"))
 local TeleportService = cloneref(game:GetService("TeleportService"))
 local Players = cloneref(game:GetService("Players"))
