@@ -5,7 +5,7 @@ local RunService = cloneref(game:GetService("RunService"))
 local TeleportService = cloneref(game:GetService("TeleportService"))
 local vim = cloneref(game:GetService("VirtualInputManager"))
 
-local HOST = "Addy_45863"
+local HOST = "Addy45863"
 local whitelist = {HOST}
 local MAX_LENGTH = 200
 local lastCommandTime = 0
