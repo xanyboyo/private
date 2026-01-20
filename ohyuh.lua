@@ -5,7 +5,7 @@ local RunService = cloneref(game:GetService("RunService"))
 local TeleportService = cloneref(game:GetService("TeleportService"))
 local vim = cloneref(game:GetService("VirtualInputManager"))
 
-local HOST = "proton_mail"
+local HOST = "Addy_45863"
 local whitelist = {HOST}
 local MAX_LENGTH = 200
 local lastCommandTime = 0
@@ -5015,6 +5015,688 @@ registerCommand("calculate", function(args, sender)
         notifyHost("Result: " .. tostring(result))
     else
         notifyHost("✗ Invalid expression")
+    end
+end)
+
+-- ============================================================================
+-- CAMERA COMMANDS
+-- ============================================================================
+
+registerCommand("fov", function(args, sender)
+    local fov = tonumber(args[1]) or 70
+    local camera = workspace.CurrentCamera
+    camera.FieldOfView = math.clamp(fov, 1, 120)
+    notifyHost("✓ FOV set to " .. fov)
+end)
+
+registerCommand("zoom", function(args, sender)
+    local distance = tonumber(args[1]) or 15
+    player.CameraMaxZoomDistance = distance
+    player.CameraMinZoomDistance = distance
+    notifyHost("✓ Camera zoom locked to " .. distance)
+end)
+
+registerCommand("unzoom", function(args, sender)
+    player.CameraMaxZoomDistance = 128
+    player.CameraMinZoomDistance = 0.5
+    notifyHost("✓ Camera zoom unlocked")
+end)
+
+registerCommand("firstperson", function(args, sender)
+    player.CameraMaxZoomDistance = 0.5
+    player.CameraMinZoomDistance = 0.5
+    notifyHost("✓ First person mode enabled")
+end)
+
+registerCommand("thirdperson", function(args, sender)
+    player.CameraMaxZoomDistance = 128
+    player.CameraMinZoomDistance = 0.5
+    notifyHost("✓ Third person mode enabled")
+end)
+
+registerCommand("freecam", function(args, sender)
+    workspace.CurrentCamera.CameraType = Enum.CameraType.Fixed
+    notifyHost("✓ Free cam enabled")
+end)
+
+registerCommand("unfreecam", function(args, sender)
+    workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+    notifyHost("✓ Free cam disabled")
+end)
+
+registerCommand("camshake", function(args, sender)
+    local intensity = tonumber(args[1]) or 5
+    
+    if _G.CamShakeConnection then
+        _G.CamShakeConnection:Disconnect()
+    end
+    
+    _G.CamShakeConnection = RunService.RenderStepped:Connect(function()
+        pcall(function()
+            local camera = workspace.CurrentCamera
+            camera.CFrame = camera.CFrame * CFrame.Angles(
+                math.rad(math.random(-intensity, intensity)),
+                math.rad(math.random(-intensity, intensity)),
+                math.rad(math.random(-intensity, intensity))
+            )
+        end)
+    end)
+    
+    notifyHost("✓ Camera shake enabled (intensity: " .. intensity .. ")")
+end)
+
+registerCommand("uncamshake", function(args, sender)
+    if _G.CamShakeConnection then
+        _G.CamShakeConnection:Disconnect()
+        _G.CamShakeConnection = nil
+        notifyHost("✓ Camera shake disabled")
+    else
+        notifyHost("✗ Camera shake not active")
+    end
+end)
+
+-- ============================================================================
+-- CHARACTER SCALE COMMANDS
+-- ============================================================================
+
+registerCommand("scale", function(args, sender)
+    local scale = tonumber(args[1]) or 2
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local humanoid = getHumanoid(char)
+    if humanoid then
+        for _, obj in ipairs(humanoid:GetChildren()) do
+            if obj:IsA("NumberValue") and obj.Name:find("Scale") then
+                obj.Value = scale
+            end
+        end
+        notifyHost("✓ Character scaled to " .. scale)
+    end
+end)
+
+registerCommand("giant", function(args, sender)
+    local scale = tonumber(args[1]) or 5
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local humanoid = getHumanoid(char)
+    if humanoid then
+        for _, obj in ipairs(humanoid:GetChildren()) do
+            if obj:IsA("NumberValue") and obj.Name:find("Scale") then
+                obj.Value = scale
+            end
+        end
+        notifyHost("✓ Giant mode enabled (scale: " .. scale .. ")")
+    end
+end)
+
+registerCommand("tiny", function(args, sender)
+    local scale = tonumber(args[1]) or 0.3
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local humanoid = getHumanoid(char)
+    if humanoid then
+        for _, obj in ipairs(humanoid:GetChildren()) do
+            if obj:IsA("NumberValue") and obj.Name:find("Scale") then
+                obj.Value = scale
+            end
+        end
+        notifyHost("✓ Tiny mode enabled (scale: " .. scale .. ")")
+    end
+end)
+
+registerCommand("normalsize", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local humanoid = getHumanoid(char)
+    if humanoid then
+        for _, obj in ipairs(humanoid:GetChildren()) do
+            if obj:IsA("NumberValue") and obj.Name:find("Scale") then
+                obj.Value = 1
+            end
+        end
+        notifyHost("✓ Character size reset to normal")
+    end
+end)
+
+-- ============================================================================
+-- RAGDOLL & PHYSICS COMMANDS
+-- ============================================================================
+
+registerCommand("ragdoll", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local humanoid = getHumanoid(char)
+    if humanoid then
+        humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+        notifyHost("✓ Ragdoll enabled")
+    end
+end)
+
+registerCommand("unragdoll", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local humanoid = getHumanoid(char)
+    if humanoid then
+        humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+        notifyHost("✓ Ragdoll disabled")
+    end
+end)
+
+registerCommand("fling", function(args, sender)
+    local power = tonumber(args[1]) or 500
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local root = getRoot(char)
+    if root then
+        local bv = Instance.new("BodyVelocity")
+        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        bv.Velocity = Vector3.new(math.random(-power, power), power, math.random(-power, power))
+        bv.Parent = root
+        task.wait(0.1)
+        bv:Destroy()
+        notifyHost("✓ Flung character (power: " .. power .. ")")
+    end
+end)
+
+registerCommand("trip", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local humanoid = getHumanoid(char)
+    if humanoid then
+        humanoid:ChangeState(Enum.HumanoidStateType.FallingDown)
+        notifyHost("✓ Character tripped")
+    end
+end)
+
+-- ============================================================================
+-- TRAIL & BEAM EFFECTS
+-- ============================================================================
+
+registerCommand("trail", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local root = getRoot(char)
+    if root then
+        local attachment0 = Instance.new("Attachment")
+        local attachment1 = Instance.new("Attachment")
+        attachment0.Parent = root
+        attachment1.Parent = root
+        attachment1.Position = Vector3.new(0, -2, 0)
+        
+        local trail = Instance.new("Trail")
+        trail.Attachment0 = attachment0
+        trail.Attachment1 = attachment1
+        trail.Lifetime = 2
+        trail.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0), Color3.fromRGB(0, 0, 255))
+        trail.Parent = root
+        
+        notifyHost("✓ Trail effect enabled")
+    end
+end)
+
+registerCommand("untrail", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local root = getRoot(char)
+    if root then
+        for _, obj in ipairs(root:GetChildren()) do
+            if obj:IsA("Trail") or obj:IsA("Attachment") then
+                obj:Destroy()
+            end
+        end
+        notifyHost("✓ Trail effect removed")
+    end
+end)
+
+registerCommand("rainbowtrail", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local root = getRoot(char)
+    if root then
+        local attachment0 = Instance.new("Attachment")
+        local attachment1 = Instance.new("Attachment")
+        attachment0.Parent = root
+        attachment1.Parent = root
+        attachment1.Position = Vector3.new(0, -2, 0)
+        
+        local trail = Instance.new("Trail")
+        trail.Attachment0 = attachment0
+        trail.Attachment1 = attachment1
+        trail.Lifetime = 2
+        trail.Parent = root
+        
+        task.spawn(function()
+            while trail and trail.Parent do
+                for hue = 0, 1, 0.01 do
+                    if not trail or not trail.Parent then break end
+                    trail.Color = ColorSequence.new(Color3.fromHSV(hue, 1, 1))
+                    task.wait(0.05)
+                end
+            end
+        end)
+        
+        notifyHost("✓ Rainbow trail enabled")
+    end
+end)
+
+-- ============================================================================
+-- FORCEFIELD & AURA COMMANDS
+-- ============================================================================
+
+registerCommand("ff", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local ff = Instance.new("ForceField")
+    ff.Parent = char
+    notifyHost("✓ Force field enabled")
+end)
+
+registerCommand("unff", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    for _, obj in ipairs(char:GetChildren()) do
+        if obj:IsA("ForceField") then
+            obj:Destroy()
+        end
+    end
+    notifyHost("✓ Force field removed")
+end)
+
+registerCommand("aura", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local root = getRoot(char)
+    if root then
+        if _G.AuraPart then
+            _G.AuraPart:Destroy()
+        end
+        
+        local aura = Instance.new("Part")
+        aura.Name = "Aura"
+        aura.Size = Vector3.new(8, 8, 8)
+        aura.Transparency = 0.7
+        aura.CanCollide = false
+        aura.Anchored = false
+        aura.Material = Enum.Material.Neon
+        aura.Color = Color3.fromRGB(255, 0, 255)
+        aura.Shape = Enum.PartType.Ball
+        aura.Parent = workspace
+        
+        local weld = Instance.new("Weld")
+        weld.Part0 = root
+        weld.Part1 = aura
+        weld.Parent = aura
+        
+        _G.AuraPart = aura
+        
+        notifyHost("✓ Aura enabled")
+    end
+end)
+
+registerCommand("unaura", function(args, sender)
+    if _G.AuraPart then
+        _G.AuraPart:Destroy()
+        _G.AuraPart = nil
+        notifyHost("✓ Aura removed")
+    else
+        notifyHost("✗ No aura active")
+    end
+end)
+
+-- ============================================================================
+-- ANIMATION COMMANDS
+-- ============================================================================
+
+registerCommand("animate", function(args, sender)
+    local animId = args[1]
+    
+    if not animId then
+        notifyHost("✗ Usage: !animate <animation_id>")
+        return
+    end
+    
+    local char = getCharacter(player)
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local humanoid = getHumanoid(char)
+    if humanoid then
+        local anim = Instance.new("Animation")
+        anim.AnimationId = "rbxassetid://" .. animId
+        local track = humanoid:LoadAnimation(anim)
+        track:Play()
+        notifyHost("✓ Playing animation: " .. animId)
+    end
+end)
+
+registerCommand("stopanims", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local humanoid = getHumanoid(char)
+    if humanoid then
+        for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
+            track:Stop()
+        end
+        notifyHost("✓ All animations stopped")
+    end
+end)
+
+-- ============================================================================
+-- GRAVITY & PHYSICS COMMANDS
+-- ============================================================================
+
+registerCommand("lowgrav", function(args, sender)
+    workspace.Gravity = 50
+    notifyHost("✓ Low gravity enabled")
+end)
+
+registerCommand("nograv", function(args, sender)
+    workspace.Gravity = 0
+    notifyHost("✓ Zero gravity enabled")
+end)
+
+registerCommand("normalgrav", function(args, sender)
+    workspace.Gravity = 196.2
+    notifyHost("✓ Normal gravity restored")
+end)
+
+registerCommand("highjump", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local humanoid = getHumanoid(char)
+    if humanoid then
+        if humanoid.UseJumpPower then
+            humanoid.JumpPower = 200
+        else
+            humanoid.JumpHeight = 50
+        end
+        notifyHost("✓ High jump enabled")
+    end
+end)
+
+-- ============================================================================
+-- TELEPORT LOCATION COMMANDS
+-- ============================================================================
+
+registerCommand("tpspawn", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local root = getRoot(char)
+    if root and player.RespawnLocation then
+        root.CFrame = player.RespawnLocation.CFrame
+        notifyHost("✓ Teleported to spawn")
+    else
+        notifyHost("✗ Failed: Spawn location not found")
+    end
+end)
+
+registerCommand("tporigin", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local root = getRoot(char)
+    if root then
+        root.CFrame = CFrame.new(0, 50, 0)
+        notifyHost("✓ Teleported to origin (0, 50, 0)")
+    end
+end)
+
+registerCommand("tpup", function(args, sender)
+    local distance = tonumber(args[1]) or 50
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local root = getRoot(char)
+    if root then
+        root.CFrame = root.CFrame + Vector3.new(0, distance, 0)
+        notifyHost("✓ Teleported up " .. distance .. " studs")
+    end
+end)
+
+registerCommand("tpdown", function(args, sender)
+    local distance = tonumber(args[1]) or 50
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local root = getRoot(char)
+    if root then
+        root.CFrame = root.CFrame - Vector3.new(0, distance, 0)
+        notifyHost("✓ Teleported down " .. distance .. " studs")
+    end
+end)
+
+-- ============================================================================
+-- MISC FUN COMMANDS
+-- ============================================================================
+
+registerCommand("explode", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local root = getRoot(char)
+    if root then
+        local explosion = Instance.new("Explosion")
+        explosion.Position = root.Position
+        explosion.BlastRadius = 10
+        explosion.BlastPressure = 500000
+        explosion.Parent = workspace
+        notifyHost("✓ Explosion created")
+    end
+end)
+
+registerCommand("clone", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    local clone = char:Clone()
+    clone.Parent = workspace
+    clone:MoveTo(char.PrimaryPart.Position + Vector3.new(5, 0, 0))
+    notifyHost("✓ Character cloned")
+end)
+
+registerCommand("ghost", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    for _, part in ipairs(char:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.Transparency = 0.5
+            part.CanCollide = false
+        end
+    end
+    notifyHost("✓ Ghost mode enabled")
+end)
+
+registerCommand("unghost", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    for _, part in ipairs(char:GetDescendants()) do
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+            part.Transparency = 0
+            part.CanCollide = true
+        end
+    end
+    notifyHost("✓ Ghost mode disabled")
+end)
+
+registerCommand("glow", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    for _, part in ipairs(char:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.Material = Enum.Material.Neon
+        end
+    end
+    notifyHost("✓ Glow effect enabled")
+end)
+
+registerCommand("unglow", function(args, sender)
+    local char = getCharacter(player)
+    
+    if not char then
+        notifyHost("✗ Failed: Character not found")
+        return
+    end
+    
+    for _, part in ipairs(char:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.Material = Enum.Material.SmoothPlastic
+        end
+    end
+    notifyHost("✓ Glow effect disabled")
+end)
+
+registerCommand("vibrate", function(args, sender)
+    local intensity = tonumber(args[1]) or 2
+    
+    if _G.VibrateConnection then
+        _G.VibrateConnection:Disconnect()
+    end
+    
+    _G.VibrateConnection = RunService.Heartbeat:Connect(function()
+        pcall(function()
+            local root = getRoot(getCharacter(player))
+            if root then
+                root.CFrame = root.CFrame * CFrame.new(
+                    math.random(-intensity, intensity) / 10,
+                    math.random(-intensity, intensity) / 10,
+                    math.random(-intensity, intensity) / 10
+                )
+            end
+        end)
+    end)
+    
+    notifyHost("✓ Vibrate enabled (intensity: " .. intensity .. ")")
+end)
+
+registerCommand("unvibrate", function(args, sender)
+    if _G.VibrateConnection then
+        _G.VibrateConnection:Disconnect()
+        _G.VibrateConnection = nil
+        notifyHost("✓ Vibrate disabled")
+    else
+        notifyHost("✗ Vibrate not active")
     end
 end)
 
