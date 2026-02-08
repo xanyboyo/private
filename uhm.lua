@@ -11,7 +11,7 @@
 local G2L = {};
 
 -- StarterGui.Ohyeah
-G2L["1"] = Instance.new("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"));
+G2L["1"] = Instance.new("ScreenGui", game:GetService("CoreGUI"));
 G2L["1"]["Enabled"] = true;
 G2L["1"]["Name"] = [[Hello]];
 G2L["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;
