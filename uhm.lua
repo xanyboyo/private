@@ -241,6 +241,73 @@ G2L["16"]["Rotation"] = 180;
 G2L["16"]["Color"] = ColorSequence.new{ColorSequenceKeypoint.new(0.000, Color3.fromRGB(17, 17, 17)),ColorSequenceKeypoint.new(1.000, Color3.fromRGB(53, 53, 53))};
 
 
+
+-- StarterGui.Ohyeah.Frame.ScrollingFrame.Admin4
+G2L["99"] = Instance.new("Frame", G2L["5"]);
+G2L["99"]["BorderSizePixel"] = 0;
+G2L["99"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["99"]["Size"] = UDim2.new(0, 100, 0, 100);
+G2L["99"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["99"]["Name"] = [[Admin4]];
+
+
+-- StarterGui.Ohyeah.Frame.ScrollingFrame.Admin4.LocalScript
+G2L["100"] = Instance.new("LocalScript", G2L["99"]);
+
+
+
+-- StarterGui.Ohyeah.Frame.ScrollingFrame.Admin4.Button
+G2L["101"] = Instance.new("TextButton", G2L["99"]);
+G2L["101"]["BorderSizePixel"] = 0;
+G2L["101"]["TextSize"] = 14;
+G2L["101"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["101"]["SelectionOrder"] = 5;
+G2L["101"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["101"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["101"]["BackgroundTransparency"] = 1;
+G2L["101"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["101"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["101"]["Text"] = [[]];
+G2L["9"]["Name"] = [[Button]];
+
+
+-- StarterGui.Ohyeah.Frame.ScrollingFrame.Admin4.Logo
+G2L["a101"] = Instance.new("ImageLabel", G2L["99"]);
+G2L["a101"]["BorderSizePixel"] = 0;
+G2L["a101"]["ScaleType"] = Enum.ScaleType.Fit;
+G2L["a101"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["a101"]["Image"] = [[rbxassetid://1352543873]];
+G2L["a101"]["Size"] = UDim2.new(0.16883, 0, 1, 0);
+G2L["a101"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["a101"]["BackgroundTransparency"] = 1;
+G2L["a101"]["Name"] = [[Logo]];
+
+
+-- StarterGui.Ohyeah.Frame.ScrollingFrame.Admin4.Label
+G2L["b101"] = Instance.new("TextLabel", G2L["99"]);
+G2L["b101"]["TextWrapped"] = true;
+G2L["b101"]["TextStrokeTransparency"] = 0;
+G2L["b101"]["BorderSizePixel"] = 0;
+G2L["b101"]["TextSize"] = 14;
+G2L["b101"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["b101"]["TextScaled"] = true;
+G2L["b101"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["b101"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["b101"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["b101"]["BackgroundTransparency"] = 1;
+G2L["b101"]["Size"] = UDim2.new(0.83117, 0, 0.98485, 0);
+G2L["b101"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["b101"]["Text"] = [[VIOLENT]];
+G2L["b101"]["Name"] = [[Label]];
+G2L["b101"]["Position"] = UDim2.new(0.16883, 0, 0, 0);
+
+
+-- StarterGui.Ohyeah.Frame.ScrollingFrame.Admin4.UIGradient
+G2L["c101"] = Instance.new("UIGradient", G2L["99"]);
+G2L["c101"]["Rotation"] = 180;
+G2L["c101"]["Color"] = ColorSequence.new{ColorSequenceKeypoint.new(0.000, Color3.fromRGB(17, 17, 17)),ColorSequenceKeypoint.new(1.000, Color3.fromRGB(53, 53, 53))};
+
+
 -- StarterGui.Ohyeah.Frame.ScrollingFrame.Admin1
 G2L["17"] = Instance.new("Frame", G2L["5"]);
 G2L["17"]["BorderSizePixel"] = 0;
@@ -653,6 +720,14 @@ local function C_8()
 local script = G2L["8"];
 	script.Parent.Button.MouseButton1Click:Connect(function()
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source",true))
+	end)
+end;
+task.spawn(C_8);
+-- StarterGui.Ohyeah.Frame.ScrollingFrame.Admin2.LocalScript
+local function C_8()
+local script = G2L["100"];
+	script.Parent.Button.MouseButton1Click:Connect(function()
+		loadstring(game:HttpGet("https://vt-now.github.io/VIOLENT/vt.lua",true))()
 	end)
 end;
 task.spawn(C_8);
