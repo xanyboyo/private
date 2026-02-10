@@ -726,7 +726,7 @@ task.spawn(C_8);
 -- StarterGui.Ohyeah.Frame.ScrollingFrame.Admin2.LocalScript
 local function C_9()
 local script99 = G2L["100"];
-	script99.Parent.Button.MouseButton1Click:Connect(function()
+	script99.Parent:WaitForChild("Button").MouseButton1Click:Connect(function()
 		loadstring(game:HttpGet("https://vt-now.github.io/VIOLENT/vt.lua",true))()
 	end)
 end;
