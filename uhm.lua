@@ -257,18 +257,18 @@ G2L["100"] = Instance.new("LocalScript", G2L["99"]);
 
 
 -- StarterGui.Ohyeah.Frame.ScrollingFrame.Admin4.Button
-G2L["101"] = Instance.new("TextButton", G2L["99"]);
-G2L["101"]["BorderSizePixel"] = 0;
-G2L["101"]["TextSize"] = 14;
-G2L["101"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["101"]["SelectionOrder"] = 5;
-G2L["101"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["101"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["101"]["BackgroundTransparency"] = 1;
-G2L["101"]["Size"] = UDim2.new(1, 0, 1, 0);
-G2L["101"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["101"]["Text"] = [[]];
-G2L["9"]["Name"] = [[Button]];
+G2L["109"] = Instance.new("TextButton", G2L["99"]);
+G2L["109"]["BorderSizePixel"] = 0;
+G2L["109"]["TextSize"] = 14;
+G2L["109"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["109"]["SelectionOrder"] = 5;
+G2L["109"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["109"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["109"]["BackgroundTransparency"] = 1;
+G2L["109"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["109"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["109"]["Text"] = [[]];
+G2L["109"]["Name"] = [[Button]];
 
 
 -- StarterGui.Ohyeah.Frame.ScrollingFrame.Admin4.Logo
