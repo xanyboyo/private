@@ -2121,16 +2121,23 @@ task.spawn(function()
                         Highlight.OutlineTransparency = 0.25
                     end
                     
-                    -- Calculate underground position
-                    local distanceY = -2.5 -- Default 2.5 studs below coin (half of 5)
-                    local humanoid = character:FindFirstChild("Humanoid")
-                    local head = character:FindFirstChild("Head")
-                    local leftFoot = character:FindFirstChild("LeftFoot")
+                    -- Calculate underground position: coin size + torso size
+                    local distanceY = -2.5 -- Default fallback
                     
-                    if leftFoot and head and humanoid then
-                        distanceY = -(humanoid.HipHeight + leftFoot.Size.Y + (head.Size.Y / 4)) / 2
-                    elseif head and humanoid then
-                        distanceY = -(humanoid.HipHeight + (head.Size.Y / 4)) / 2
+                    local coinVisual = closest:FindFirstChild("CoinVisual")
+                    if coinVisual then
+                        local mainCoin = coinVisual:FindFirstChild("MainCoin")
+                        if mainCoin then
+                            distanceY = -mainCoin.Size.Y
+                            
+                            -- Add torso size.Z
+                            local torso = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
+                            if torso then
+                                distanceY = distanceY - torso.Size.Z
+                            end
+                            
+                            print("[Distance] Coin size.Y:", mainCoin.Size.Y, "Final distance:", distanceY)
+                        end
                     end
                     
                     -- Create target position UNDERGROUND the coin WITH 90,0,0 rotation
