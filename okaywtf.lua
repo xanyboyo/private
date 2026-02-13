@@ -134,6 +134,9 @@ if isfile(settingsFile) then
     end
 end
 
+-- Declare scriptStarted variable
+local scriptStarted = false
+
 -- Check if autoexec is enabled
 if settings.autoExec then
     StarterGui:SetCore("SendNotification", {
@@ -614,8 +617,6 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
         )
     end
 end)
-
-local scriptStarted = false
 
 StartButton.MouseButton1Click:Connect(function()
     scriptStarted = true
@@ -2117,8 +2118,20 @@ task.spawn(function()
                         Highlight.OutlineTransparency = 0.25
                     end
                     
-                    -- Create target position (no rotation needed, it's handled by RenderStepped)
-                    local targetCFrame = CFrame.new(closest.Position + Vector3.new(0, 1.25, 0))
+                    -- Calculate underground position
+                    local distanceY = -5 -- Default 5 studs below coin
+                    local humanoid = character:FindFirstChild("Humanoid")
+                    local head = character:FindFirstChild("Head")
+                    local leftFoot = character:FindFirstChild("LeftFoot")
+                    
+                    if leftFoot and head and humanoid then
+                        distanceY = -(humanoid.HipHeight + leftFoot.Size.Y + (head.Size.Y / 4))
+                    elseif head and humanoid then
+                        distanceY = -(humanoid.HipHeight + (head.Size.Y / 4))
+                    end
+                    
+                    -- Create target position UNDERGROUND the coin
+                    local targetCFrame = CFrame.new(closest.Position + Vector3.new(0, distanceY, 0))
                     
                     -- Teleport if distance is too far (over 150 studs), otherwise tween
                     if distance > 150 then
@@ -2137,7 +2150,7 @@ task.spawn(function()
                         currentTween = game:GetService("TweenService"):Create(
                             hrp,
                             TweenInfo.new(distance/settings.tweenSpeed, Enum.EasingStyle.Linear, Enum.EasingDirection.In),
-                            {CFrame = targetCFrame} -- Only position, rotation handled by RenderStepped
+                            {CFrame = targetCFrame} -- Underground position, rotation handled by RenderStepped
                         )
                         currentTween:Play()
                         
