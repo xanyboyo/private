@@ -1830,9 +1830,12 @@ task.spawn(function()
             local humanoid = character:FindFirstChild("Humanoid")
             
             if hrp then
-                -- Always maintain 90,0,0 rotation
+                -- ALWAYS maintain 90,0,0 rotation (even while tweening)
+                -- Get current CFrame, extract position, then apply rotation
+                local currentCF = hrp.CFrame
+                local currentPos = currentCF.Position
                 local rotation = CFrame.Angles(math.rad(90), 0, 0)
-                hrp.CFrame = CFrame.new(hrp.Position) * rotation
+                hrp.CFrame = CFrame.new(currentPos) * rotation
                 
                 -- Reset velocities when not tweening
                 if not currentlyTweening then
@@ -2119,19 +2122,21 @@ task.spawn(function()
                     end
                     
                     -- Calculate underground position
-                    local distanceY = -5 -- Default 5 studs below coin
+                    local distanceY = -2.5 -- Default 2.5 studs below coin (half of 5)
                     local humanoid = character:FindFirstChild("Humanoid")
                     local head = character:FindFirstChild("Head")
                     local leftFoot = character:FindFirstChild("LeftFoot")
                     
                     if leftFoot and head and humanoid then
-                        distanceY = -(humanoid.HipHeight + leftFoot.Size.Y + (head.Size.Y / 4))
+                        distanceY = -(humanoid.HipHeight + leftFoot.Size.Y + (head.Size.Y / 4)) / 2
                     elseif head and humanoid then
-                        distanceY = -(humanoid.HipHeight + (head.Size.Y / 4))
+                        distanceY = -(humanoid.HipHeight + (head.Size.Y / 4)) / 2
                     end
                     
-                    -- Create target position UNDERGROUND the coin
-                    local targetCFrame = CFrame.new(closest.Position + Vector3.new(0, distanceY, 0))
+                    -- Create target position UNDERGROUND the coin WITH 90,0,0 rotation
+                    local targetPosition = closest.Position + Vector3.new(0, distanceY, 0)
+                    local rotation = CFrame.Angles(math.rad(90), 0, 0)
+                    local targetCFrame = CFrame.new(targetPosition) * rotation
                     
                     -- Teleport if distance is too far (over 150 studs), otherwise tween
                     if distance > 150 then
@@ -2147,10 +2152,11 @@ task.spawn(function()
                     else
                         print("[Tween] Moving to coin (" .. math.floor(distance) .. " studs)")
                         
+                        -- Tween CFrame with 90,0,0 rotation included
                         currentTween = game:GetService("TweenService"):Create(
                             hrp,
                             TweenInfo.new(distance/settings.tweenSpeed, Enum.EasingStyle.Linear, Enum.EasingDirection.In),
-                            {CFrame = targetCFrame} -- Underground position, rotation handled by RenderStepped
+                            {CFrame = targetCFrame} -- CFrame with position AND 90,0,0 rotation
                         )
                         currentTween:Play()
                         
