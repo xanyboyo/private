@@ -1817,21 +1817,34 @@ task.spawn(function()
     end
 end)
 
--- Velocity reset loop for when not tweening
+-- Constant rotation and velocity reset loop
 task.spawn(function()
     local RunService = game:GetService("RunService")
     RunService.RenderStepped:Connect(function()
         if not scriptEnabled.enabled then return end
-        if currentlyTweening then return end -- Only reset when NOT tweening
         
         local character = LocalPlayer.Character
         if character then
             local hrp = character:FindFirstChild("HumanoidRootPart")
+            local humanoid = character:FindFirstChild("Humanoid")
+            
             if hrp then
-                hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
-                hrp.AssemblyAngularVelocity = Vector3.new(0,0,0)
-                hrp.Velocity = Vector3.new(0,0,0)
-                hrp.RotVelocity = Vector3.new(0,0,0)
+                -- Always maintain 90,0,0 rotation
+                local rotation = CFrame.Angles(math.rad(90), 0, 0)
+                hrp.CFrame = CFrame.new(hrp.Position) * rotation
+                
+                -- Reset velocities when not tweening
+                if not currentlyTweening then
+                    hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
+                    hrp.AssemblyAngularVelocity = Vector3.new(0,0,0)
+                    hrp.Velocity = Vector3.new(0,0,0)
+                    hrp.RotVelocity = Vector3.new(0,0,0)
+                end
+            end
+            
+            -- Prevent getting up animation
+            if humanoid then
+                humanoid:ChangeState(Enum.HumanoidStateType.Physics)
             end
         end
     end)
@@ -2104,9 +2117,8 @@ task.spawn(function()
                         Highlight.OutlineTransparency = 0.25
                     end
                     
-                    -- Create rotation (90, 0, 0)
-                    local rotation = CFrame.fromOrientation(math.rad(90), 0, 0)
-                    local targetCFrame = CFrame.new(closest.Position + Vector3.new(0, 1.25, 0)) * rotation
+                    -- Create target position (no rotation needed, it's handled by RenderStepped)
+                    local targetCFrame = CFrame.new(closest.Position + Vector3.new(0, 1.25, 0))
                     
                     -- Teleport if distance is too far (over 150 studs), otherwise tween
                     if distance > 150 then
@@ -2125,7 +2137,7 @@ task.spawn(function()
                         currentTween = game:GetService("TweenService"):Create(
                             hrp,
                             TweenInfo.new(distance/settings.tweenSpeed, Enum.EasingStyle.Linear, Enum.EasingDirection.In),
-                            {CFrame = targetCFrame} -- Now includes rotation
+                            {CFrame = targetCFrame} -- Only position, rotation handled by RenderStepped
                         )
                         currentTween:Play()
                         
