@@ -2112,26 +2112,17 @@ task.spawn(function()
                                 -- CONSTANTLY fire touch signals
                                 fireCoinTouch(currentTargetCoin)
                                 
-                                -- Create micro-tween to jitter position
+                                -- Jitter position directly (no tween)
                                 if hrp and character then
                                     local jitteredDistanceY = jitterToggle and (baseDistanceY + jitterAmount) or baseDistanceY
                                     jitterToggle = not jitterToggle
                                     
                                     local jitteredPosition = currentTargetCoin.Position + Vector3.new(0, jitteredDistanceY, 0)
                                     local rotation = CFrame.Angles(math.rad(90), 0, 0)
-                                    local jitterTargetCFrame = CFrame.new(jitteredPosition) * rotation
+                                    hrp.CFrame = CFrame.new(jitteredPosition) * rotation
                                     
-                                    -- Cancel existing tween and create new micro-tween
-                                    if currentTween then
-                                        currentTween:Cancel()
-                                    end
-                                    
-                                    currentTween = game:GetService("TweenService"):Create(
-                                        hrp,
-                                        TweenInfo.new(0.01, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
-                                        {CFrame = jitterTargetCFrame}
-                                    )
-                                    currentTween:Play()
+                                    -- Unanchor to allow the position change
+                                    hrp.Anchored = false
                                 end
                             end
                         end
