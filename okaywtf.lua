@@ -1837,12 +1837,15 @@ task.spawn(function()
                 local rotation = CFrame.Angles(math.rad(90), 0, 0)
                 hrp.CFrame = CFrame.new(currentPos) * rotation
                 
-                -- Reset velocities when not tweening
+                -- CONSTANTLY break velocity when not tweening (prevents falling out of map)
                 if not currentlyTweening then
                     hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
                     hrp.AssemblyAngularVelocity = Vector3.new(0,0,0)
                     hrp.Velocity = Vector3.new(0,0,0)
                     hrp.RotVelocity = Vector3.new(0,0,0)
+                    
+                    -- Also anchor to prevent any movement
+                    hrp.Anchored = true
                 end
             end
             
@@ -2028,7 +2031,13 @@ task.spawn(function()
                     
                     -- Start validation loop (checks every 10ms)
                     coinValidationActive = true
+                    
+                    -- Start constant touch firing and position jitter loop
                     task.spawn(function()
+                        local baseDistanceY = distanceY
+                        local jitterAmount = 0.5
+                        local jitterToggle = false
+                        
                         while coinValidationActive and currentTargetCoin do
                             task.wait(0.01) -- 10 milliseconds
                             
@@ -2099,6 +2108,31 @@ task.spawn(function()
                                     preloadNextPaths()
                                     break
                                 end
+                                
+                                -- CONSTANTLY fire touch signals
+                                fireCoinTouch(currentTargetCoin)
+                                
+                                -- Create micro-tween to jitter position
+                                if hrp and character then
+                                    local jitteredDistanceY = jitterToggle and (baseDistanceY + jitterAmount) or baseDistanceY
+                                    jitterToggle = not jitterToggle
+                                    
+                                    local jitteredPosition = currentTargetCoin.Position + Vector3.new(0, jitteredDistanceY, 0)
+                                    local rotation = CFrame.Angles(math.rad(90), 0, 0)
+                                    local jitterTargetCFrame = CFrame.new(jitteredPosition) * rotation
+                                    
+                                    -- Cancel existing tween and create new micro-tween
+                                    if currentTween then
+                                        currentTween:Cancel()
+                                    end
+                                    
+                                    currentTween = game:GetService("TweenService"):Create(
+                                        hrp,
+                                        TweenInfo.new(0.01, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
+                                        {CFrame = jitterTargetCFrame}
+                                    )
+                                    currentTween:Play()
+                                end
                             end
                         end
                     end)
@@ -2121,7 +2155,7 @@ task.spawn(function()
                         Highlight.OutlineTransparency = 0.25
                     end
                     
-                    -- Calculate underground position: coin size + torso size
+                    -- Calculate underground position: coin size + torso size + 0.125
                     local distanceY = -2.5 -- Default fallback
                     
                     local coinVisual = closest:FindFirstChild("CoinVisual")
@@ -2136,6 +2170,9 @@ task.spawn(function()
                                 distanceY = distanceY - torso.Size.X
                             end
                             
+                            -- Add 0.125 offset
+                            distanceY = distanceY + 0.125
+                            
                             print("[Distance] Coin size.X:", mainCoin.Size.X, "Final distance:", distanceY)
                         end
                     end
@@ -2145,14 +2182,13 @@ task.spawn(function()
                     local rotation = CFrame.Angles(math.rad(90), 0, 0)
                     local targetCFrame = CFrame.new(targetPosition) * rotation
                     
+                    -- Unanchor before tweening
+                    hrp.Anchored = false
+                    
                     -- Teleport if distance is too far (over 150 studs), otherwise tween
                     if distance > 150 then
                         print("[Teleport] Coin too far (" .. math.floor(distance) .. " studs), teleporting")
                         hrp.CFrame = targetCFrame
-                        
-                        -- Fire touch signals for instant collection
-                        task.wait(0.02)
-                        fireCoinTouch(closest)
                         
                         currentlyTweening = false
                         coinValidationActive = true
@@ -2166,10 +2202,6 @@ task.spawn(function()
                             {CFrame = targetCFrame} -- CFrame with position AND 90,0,0 rotation
                         )
                         currentTween:Play()
-                        
-                        -- Fire touch signals after a brief moment
-                        task.wait(0.05)
-                        fireCoinTouch(closest)
                         
                         -- Don't wait for tween to complete, let validation handle it
                     end
