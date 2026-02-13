@@ -2128,15 +2128,15 @@ task.spawn(function()
                     if coinVisual then
                         local mainCoin = coinVisual:FindFirstChild("MainCoin")
                         if mainCoin then
-                            distanceY = -mainCoin.Size.Y
+                            distanceY = -mainCoin.Size.X
                             
-                            -- Add torso size.Z
+                            -- Add torso size.X
                             local torso = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
                             if torso then
-                                distanceY = distanceY - torso.Size.Z
+                                distanceY = distanceY - torso.Size.X
                             end
                             
-                            print("[Distance] Coin size.Y:", mainCoin.Size.Y, "Final distance:", distanceY)
+                            print("[Distance] Coin size.X:", mainCoin.Size.X, "Final distance:", distanceY)
                         end
                     end
                     
