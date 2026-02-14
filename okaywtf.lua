@@ -1247,6 +1247,7 @@ local preloadedPaths = {} -- Array to store 3 preloaded paths
 local currentTween = nil -- Store current tween to cancel on death
 local currentTargetCoin = nil -- Track current target for claiming/releasing
 local coinValidationActive = false -- Flag to control validation loop
+local isJittering = false -- Flag to indicate when jittering is happening
 
 -- Touch firing optimization
 local firesignal = firesignal or fire_signal
@@ -1830,15 +1831,18 @@ task.spawn(function()
             local humanoid = character:FindFirstChild("Humanoid")
             
             if hrp then
-                -- ALWAYS maintain 90,0,0 rotation (even while tweening)
-                -- Get current CFrame, extract position, then apply rotation
-                local currentCF = hrp.CFrame
-                local currentPos = currentCF.Position
-                local rotation = CFrame.Angles(math.rad(90), 0, 0)
-                hrp.CFrame = CFrame.new(currentPos) * rotation
+                -- Don't interfere with jittering
+                if not isJittering then
+                    -- ALWAYS maintain 90,0,0 rotation (even while tweening)
+                    -- Get current CFrame, extract position, then apply rotation
+                    local currentCF = hrp.CFrame
+                    local currentPos = currentCF.Position
+                    local rotation = CFrame.Angles(math.rad(90), 0, 0)
+                    hrp.CFrame = CFrame.new(currentPos) * rotation
+                end
                 
                 -- CONSTANTLY break velocity when not tweening (prevents falling out of map)
-                if not currentlyTweening then
+                if not currentlyTweening and not isJittering then
                     hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
                     hrp.AssemblyAngularVelocity = Vector3.new(0,0,0)
                     hrp.Velocity = Vector3.new(0,0,0)
@@ -2032,6 +2036,15 @@ task.spawn(function()
                     -- Start validation loop (checks every 10ms)
                     coinValidationActive = true
                     
+                    -- Cancel the main tween and start jittering
+                    task.wait(0.05) -- Wait a tiny bit for tween to get close
+                    if currentTween then
+                        currentTween:Cancel()
+                        currentTween = nil
+                    end
+                    currentlyTweening = false
+                    isJittering = true
+                    
                     -- Start constant touch firing and position jitter loop
                     task.spawn(function()
                         local baseDistanceY = distanceY
@@ -2045,6 +2058,7 @@ task.spawn(function()
                             if currentTargetCoin and not currentTargetCoin.Parent then
                                 print("[Validation] Target coin removed from game!")
                                 coinValidationActive = false
+                                isJittering = false
                                 break
                             end
                             
@@ -2052,10 +2066,6 @@ task.spawn(function()
                                 local coinVisual = currentTargetCoin:FindFirstChild("CoinVisual")
                                 if not coinVisual then
                                     print("[Validation] Coin visual removed!")
-                                    if currentTween then
-                                        currentTween:Cancel()
-                                        currentTween = nil
-                                    end
                                     if hrp then
                                         hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
                                         hrp.AssemblyAngularVelocity = Vector3.new(0,0,0)
@@ -2064,6 +2074,7 @@ task.spawn(function()
                                     currentTargetCoin = nil
                                     currentlyTweening = false
                                     coinValidationActive = false
+                                    isJittering = false
                                     preloadedPaths = {}
                                     preloadNextPaths()
                                     break
@@ -2072,10 +2083,6 @@ task.spawn(function()
                                 local mainCoin = coinVisual:FindFirstChild("MainCoin")
                                 if not mainCoin or mainCoin.Transparency > 0 then
                                     print("[Validation] Coin collected!")
-                                    if currentTween then
-                                        currentTween:Cancel()
-                                        currentTween = nil
-                                    end
                                     if hrp then
                                         hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
                                         hrp.AssemblyAngularVelocity = Vector3.new(0,0,0)
@@ -2084,6 +2091,7 @@ task.spawn(function()
                                     currentTargetCoin = nil
                                     currentlyTweening = false
                                     coinValidationActive = false
+                                    isJittering = false
                                     preloadedPaths = {}
                                     preloadNextPaths()
                                     break
@@ -2092,10 +2100,6 @@ task.spawn(function()
                                 -- Check if still safe from murderer
                                 if not isPositionSafe(currentTargetCoin.Position) then
                                     print("[Validation] Coin no longer safe from murderer!")
-                                    if currentTween then
-                                        currentTween:Cancel()
-                                        currentTween = nil
-                                    end
                                     if hrp then
                                         hrp.AssemblyLinearVelocity = Vector3.new(0,0,0)
                                         hrp.AssemblyAngularVelocity = Vector3.new(0,0,0)
@@ -2104,6 +2108,7 @@ task.spawn(function()
                                     currentTargetCoin = nil
                                     currentlyTweening = false
                                     coinValidationActive = false
+                                    isJittering = false
                                     preloadedPaths = {}
                                     preloadNextPaths()
                                     break
@@ -2126,6 +2131,9 @@ task.spawn(function()
                                 end
                             end
                         end
+                        
+                        -- Reset flag when done
+                        isJittering = false
                     end)
                     
                     -- If we used a preloaded path, recalculate the missing path
