@@ -2036,22 +2036,30 @@ task.spawn(function()
                     -- Start validation loop (checks every 10ms)
                     coinValidationActive = true
                     
-                    -- Cancel the main tween and start jittering
-                    task.wait(0.05) -- Wait a tiny bit for tween to get close
-                    if currentTween then
-                        currentTween:Cancel()
-                        currentTween = nil
-                    end
-                    currentlyTweening = false
-                    isJittering = true
-                    
                     -- Start constant touch firing and position jitter loop
                     task.spawn(function()
+                        -- Wait for tween to complete or get close to target
+                        if currentTween then
+                            currentTween.Completed:Wait()
+                            currentTween = nil
+                        end
+                        
+                        -- Check if already jittering (prevent overlaps)
+                        if isJittering then
+                            print("[Jitter] Already jittering, skipping")
+                            return
+                        end
+                        
+                        -- Now start jittering
+                        currentlyTweening = false
+                        isJittering = true
+                        print("[Jitter] Starting jitter loop")
+                        
                         local baseDistanceY = distanceY
                         local jitterAmount = 0.1
                         local jitterToggle = false
                         
-                        while coinValidationActive and currentTargetCoin do
+                        while coinValidationActive and currentTargetCoin and isJittering do
                             task.wait(0.01) -- 10 milliseconds
                             
                             -- Check if coin is still valid
@@ -2133,6 +2141,7 @@ task.spawn(function()
                         end
                         
                         -- Reset flag when done
+                        print("[Jitter] Ending jitter loop")
                         isJittering = false
                     end)
                     
