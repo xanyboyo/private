@@ -1160,9 +1160,11 @@ local function getCoinCount()
                                 if amount then
                                     -- Get the text and convert to number
                                     local coinText = amount.Text
+                                    print("[Coin Count Debug] Raw text:", coinText)
                                     -- Remove commas if present (e.g., "1,234" -> "1234")
                                     local cleanText = coinText:gsub(",", "")
                                     local num = tonumber(cleanText)
+                                    print("[Coin Count Debug] Parsed number:", num)
                                     return num or 0
                                 end
                             end
@@ -1171,12 +1173,14 @@ local function getCoinCount()
                 end
             end
         end
+        print("[Coin Count Debug] UI path not found, returning 0")
         return 0
     end)
     
     if success then
         return count
     else
+        print("[Coin Count Debug] Error:", count)
         return 0
     end
 end
@@ -2058,9 +2062,11 @@ task.spawn(function()
                         local baseDistanceY = distanceY
                         local jitterAmount = 0.1
                         local jitterToggle = false
+                        local touchFireCounter = 0
                         
                         while coinValidationActive and currentTargetCoin and isJittering do
                             task.wait(0.01) -- 10 milliseconds
+                            touchFireCounter = touchFireCounter + 1
                             
                             -- Check if coin is still valid
                             if currentTargetCoin and not currentTargetCoin.Parent then
@@ -2122,8 +2128,11 @@ task.spawn(function()
                                     break
                                 end
                                 
-                                -- CONSTANTLY fire touch signals
-                                fireCoinTouch(currentTargetCoin)
+                                -- CONSTANTLY fire touch signals (but only every 50ms to prevent double-collection)
+                                if touchFireCounter >= 5 then
+                                    fireCoinTouch(currentTargetCoin)
+                                    touchFireCounter = 0
+                                end
                                 
                                 -- Jitter position directly (no tween)
                                 if hrp and character then
