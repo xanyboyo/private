@@ -2048,7 +2048,7 @@ task.spawn(function()
                     -- Start constant touch firing and position jitter loop
                     task.spawn(function()
                         local baseDistanceY = distanceY
-                        local jitterAmount = 0.5
+                        local jitterAmount = 0.25
                         local jitterToggle = false
                         
                         while coinValidationActive and currentTargetCoin do
